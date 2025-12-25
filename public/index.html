@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SRR Creative Hub | Golden Basket</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Outfit:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- PDF Lib -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <header class="glass-panel flex-between">
+        <div class="brand-section">
+          <div>
+            <h1>Sheikh Rasel Robin</h1>
+            <p style="color: var(--text-gray); font-size: 0.9rem">
+              Golden Basket Creative (DOP, Editor & Script Writer)
+            </p>
+          </div>
+        </div>
+
+        <div class="clock-widget">
+          <div class="time" id="clock-time">00:00:00</div>
+          <div class="date" id="clock-date">Loading...</div>
+        </div>
+      </header>
+
+      <!-- Attendance & Status -->
+      <section
+        class="glass-panel status-bar flex-between"
+        style="align-items: center"
+      >
+        <div style="display: flex; gap: 15px; align-items: center">
+          <span style="color: var(--text-gray)">Current Status:</span>
+          <button
+            id="status-btn-active"
+            class="status-badge"
+            onclick="setStatus('Active')"
+          >
+            Active
+          </button>
+          <button
+            id="status-btn-inactive"
+            class="status-badge" 
+            onclick="setStatus('Inactive')"
+          >
+            Inactive
+          </button>
+        </div>
+
+        <div
+          class="attendance-controls"
+          style="display: flex; gap: 15px; align-items: center"
+        >
+          <!-- Timer Removed -->
+          <button id="btn-in" class="btn btn-gold" onclick="punchIn()">
+            <i class="fa-solid fa-right-to-bracket"></i> Office In
+          </button>
+          <button
+            id="btn-out"
+            class="btn btn-outline"
+            onclick="punchOut()"
+            disabled
+          >
+            <i class="fa-solid fa-right-from-bracket"></i> Office Out
+          </button>
+        </div>
+      </section>
+
+      <!-- Main Dashboard -->
+      <div class="dashboard-grid">
+        <!-- Sidebar / Calendar -->
+        <aside class="glass-panel calendar-widget">
+          <div class="calendar-header flex-between">
+            <button
+              class="btn-outline"
+              onclick="changeMonth(-1)"
+              style="padding: 5px 10px"
+            >
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <h3 id="calendar-month-year">Month Year</h3>
+            <button
+              class="btn-outline"
+              onclick="changeMonth(1)"
+              style="padding: 5px 10px"
+            >
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+          <div class="calendar-grid" id="calendar-days">
+            <!-- JS will populate -->
+          </div>
+
+          <div style="margin-top: 30px">
+            <h4><i class="fa-solid fa-folder-open"></i> Quick Access</h4>
+            <ul
+              id="resource-list"
+              style="list-style: none; margin-top: 15px; padding: 0"
+            >
+              <!-- Resources List -->
+            </ul>
+            <button
+              class="btn btn-outline"
+              style="width: 100%; margin-top: 10px; font-size: 0.8rem"
+              onclick="addResourceModal()"
+            >
+              + Add Link
+            </button>
+          </div>
+        </aside>
+
+        <!-- Daily Work Log -->
+        <main class="glass-panel daily-log-section">
+          <div class="flex-between" style="margin-bottom: 20px">
+            <h2>Daily Task Breakdown</h2>
+            <span
+              id="selected-date-display"
+              style="color: var(--primary-gold); font-weight: bold"
+              >Today</span
+            >
+          </div>
+
+          <div class="grid-2">
+            <!-- Completed Tasks -->
+            <div class="task-category">
+              <h4><i class="fa-solid fa-check-circle"></i> Completed Tasks</h4>
+              <textarea
+                id="task-completed"
+                class="input-field"
+                rows="4"
+                placeholder="List completed tasks..."
+              ></textarea>
+            </div>
+
+            <!-- Work In Progress -->
+            <div class="task-category">
+              <h4><i class="fa-solid fa-spinner"></i> Work In Progress</h4>
+              <textarea
+                id="task-wip"
+                class="input-field"
+                rows="4"
+                placeholder="List tasks in progress..."
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <!-- Plan for Tomorrow -->
+            <div class="task-category">
+              <h4><i class="fa-solid fa-calendar-day"></i> Plan for Tomorrow</h4>
+              <textarea
+                id="task-tomorrow"
+                class="input-field"
+                rows="4"
+                placeholder="Plan for next day..."
+              ></textarea>
+            </div>
+
+            <!-- Issues / Notes -->
+            <div class="task-category">
+              <h4><i class="fa-solid fa-circle-exclamation"></i> Issues / Notes</h4>
+              <textarea
+                id="task-issues"
+                class="input-field"
+                rows="4"
+                placeholder="Any blockers or notes..."
+              ></textarea>
+            </div>
+          </div>
+
+          <div style="text-align: right; margin-top: 20px">
+            <button class="btn btn-gold" onclick="saveDailyLog()">
+              <i class="fa-solid fa-floppy-disk"></i> Save Daily Log
+            </button>
+            <!-- Success Message -->
+            <span
+              id="save-msg"
+              style="
+                margin-left: 15px;
+                color: var(--success-green);
+                opacity: 0;
+                transition: opacity 0.5s;
+              "
+              >Saved!</span
+            >
+          </div>
+        </main>
+      </div>
+
+      <!-- Issue Tracking & Solution Hub -->
+      <section class="glass-panel" style="margin-bottom: 30px">
+        <div class="flex-between">
+          <h3><i class="fa-solid fa-bug"></i> The Solution Hub (Issues)</h3>
+          <button class="btn btn-outline" onclick="toggleIssueForm()">
+            + Report Issue
+          </button>
+        </div>
+
+        <div
+          id="issue-form"
+          style="
+            display: none;
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+          "
+        >
+          <div class="grid-2">
+            <input
+              type="text"
+              id="issue-title"
+              class="input-field"
+              placeholder="What happened?"
+            />
+            <input
+              type="text"
+              id="issue-solution"
+              class="input-field"
+              placeholder="Quick fix (optional)"
+            />
+          </div>
+          <button
+            class="btn btn-gold"
+            style="margin-top: 10px"
+            onclick="addIssue()"
+          >
+            Submit
+          </button>
+        </div>
+
+        <div
+          id="issues-list"
+          style="
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+          "
+        >
+          <!-- Issues will load here -->
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer>
+        <button class="btn btn-gold" onclick="generatePDF()">
+          <i class="fa-solid fa-file-pdf"></i> Generate Monthly Report
+        </button>
+        <p style="margin-top: 20px; color: var(--text-gray); font-size: 0.8rem">
+          &copy; 2025 Golden Basket. All Rights Reserved.
+        </p>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
